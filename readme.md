@@ -1,4 +1,4 @@
-# Keap REST v2 API - Missing Features
+# Keap REST v2 API - Missing & Incomplete Features
 
 This document outlines functionality available in XML-RPC/REST v1 that is **missing or limited** in REST v2.
 
@@ -26,7 +26,7 @@ If you've identified an issue but are unsure of how to contribute, please open a
 Below is a list of specific features from various applications that relied on the various XML-RPC services that are not yet implemented,
 under-implemented, or have significant limitations in REST v2.
 
-### 1. Contact Count (`count()`)
+### 1. Contact Count (`DataService.count` - Any Table)
 **XML-RPC Capability:**
 - `data()->count('Contact', ['Id' => '%'])` - Returns total contact count in a single call
 
@@ -39,22 +39,21 @@ under-implemented, or have significant limitations in REST v2.
 
 ---
 
-### 2. Tag Application Dates (ContactGroupAssign Table)
+### 2. Tag Application Dates (`DataService.query` - ContactGroupAssign Table)
 **XML-RPC Capability:**
 - `data()->query('ContactGroupAssign', ...)` with `['Contact.Id' => $contactId]`
 - Returns `DateCreated` for all tags applied to a single contact in **one call**
 
 **Current REST v2 Solution:**
 - ❌ No endpoint to retrieve tag application dates directly
-
-**Workaround:** Must make 1 call to get contact tags, then **dozens of additional calls** to "List Tagged Contacts" endpoint for each tag
+  - **Workaround:** Must make 1 call to get contact tags, then 1 call per each of contact's tags to "List Tagged Contacts" endpoint for each tag. **N+1 Problem**
 - Additional problem: ❌ Cannot filter "List Tagged Contacts" by contact ID
 
 **Impact:** Severe performance degradation (1 call → N+1 calls where N = number of tags)
 
 ---
 
-### 3. Bulk Email Engagement Data (EmailAddStatus Table)
+### 3. Bulk Email Engagement Data (`DataService.query` - EmailAddStatus Table)
 **XML-RPC Capability:**
 - `data()->query('EmailAddStatus', ...)` - Returns bulk engagement data including:
   - Opt status (`Type`)
@@ -73,7 +72,7 @@ under-implemented, or have significant limitations in REST v2.
 
 ---
 
-### 4. Custom Field Group Names (DataFormGroup Table)
+### 4. Custom Field Group Names (`DataService.query` - DataFormGroup Table)
 **XML-RPC Capability:**
 - `data()->query('DataFormGroup', ...)` - Returns custom field group metadata:
   - `Id`
@@ -91,7 +90,7 @@ under-implemented, or have significant limitations in REST v2.
 
 ---
 
-### 5. Tag Search with LIKE (ContactGroup Table)
+### 5. Tag Search with LIKE (`DataService.query` - ContactGroup Table)
 **XML-RPC Capability:**
 - `data()->query('ContactGroup', ...)` with `['GroupName' => '%search%']`
 - LIKE searching to find tags containing a word or phrase
@@ -104,7 +103,7 @@ under-implemented, or have significant limitations in REST v2.
 
 ---
 
-### 6. Fetch Specific Tags by IDs (ContactGroup Table - IN Query)
+### 6. Fetch Specific Tags by IDs (`DataService.query` - ContactGroup Table - IN Query)
 **XML-RPC Capability:**
 - `data()->query('ContactGroup', ...)` with `['Id' => [1, 5, 10, 25]]`
 - IN searching to fetch only specific tags by ID array
@@ -118,7 +117,7 @@ under-implemented, or have significant limitations in REST v2.
 
 ---
 
-### 7. Tag Contact Count (ContactGroupAssign Table)
+### 7. Tag Contact Count (`DataService.count` - ContactGroupAssign Table)
 **XML-RPC Capability:**
 - `data()->count('ContactGroupAssign', ['GroupId' => $tagId])`
 - Returns count of contacts with a specific tag in one call
