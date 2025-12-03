@@ -3,7 +3,12 @@
 This document outlines functionality available in XML-RPC/REST v1 that is **missing or limited** in REST v2.
 
 ## Purpose
-Document gaps between XML-RPC/v1 and REST v2 to communicate requirements to the Keap API team to ensure feature parity exists before sunsetting older APIs.
+Document missing, incomplete, or inefficiently implemented features between XML-RPC/v1 and REST v2 to communicate requirements to the Keap API team to ensure feature parity exists prior to sunsetting older APIs.
+
+## Contributing
+We need your help! If you identify additional missing features or limitations in REST v2, please contribute by submitting a pull request to this repository with the details.
+
+If you've identified an issue but are unsure of how to contribute, please open an issue so we can discuss and document it.
 
 ---
 
