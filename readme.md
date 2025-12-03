@@ -10,8 +10,6 @@ We need your help! If you identify additional missing features or limitations in
 
 If you've identified an issue but are unsure of how to contribute, please open an issue so we can discuss and document it.
 
----
-
 ## Key Points
 
 - The XML-RPC API provided a robust Data Service endpoint that allowed for fetching data from various tables with flexible querying capabilities.
