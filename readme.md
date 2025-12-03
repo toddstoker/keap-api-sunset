@@ -79,10 +79,9 @@ Document gaps between XML-RPC/v1 and REST v2 to communicate requirements to the 
 - `data()->query('ContactGroup', ...)` with `['GroupName' => '%search%']`
 - LIKE searching to find tags containing a word or phrase
 
-**REST v2 Gap:**
-- ❌ Only supports exact name matching
-- Cannot search for tags by partial name
-- Must paginate through all tags and filter client-side
+- Retrieving tags endpoint only supports exact name matches when filtering
+
+**Workaround:** Must paginate through all tags and manually filter client-side
 
 **Impact:** Reduced search functionality for tag discovery
 
@@ -93,9 +92,10 @@ Document gaps between XML-RPC/v1 and REST v2 to communicate requirements to the 
 - `data()->query('ContactGroup', ...)` with `['Id' => [1, 5, 10, 25]]`
 - IN searching to fetch only specific tags by ID array
 
-**REST v2 Gap:**
-- ❌ Must paginate through all tags
-- Cannot request specific subset of tags by ID
+**Current REST v2 Solution:**
+- Retrieving tags endpoint only supports limited fields to filter by
+
+**Workaround:** Must paginate through all tags and manually filter client-side
 
 **Impact:** Inefficient data retrieval when only specific tags are needed
 
@@ -106,9 +106,10 @@ Document gaps between XML-RPC/v1 and REST v2 to communicate requirements to the 
 - `data()->count('ContactGroupAssign', ['GroupId' => $tagId])`
 - Returns count of contacts with a specific tag in one call
 
-**REST v2 Gap:**
+**Current REST v2 Solution:**
 - ❌ No endpoint to count contacts for a tag
-- Must fetch and count all contact records
+
+**Workaround:** Must paginate through all contacts for a specific tag and count them
 
 **Impact:** Performance degradation for tag analytics
 
@@ -153,3 +154,4 @@ Document gaps between XML-RPC/v1 and REST v2 to communicate requirements to the 
 - Inverse operation not available
 
 ---
+
