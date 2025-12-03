@@ -12,7 +12,21 @@ If you've identified an issue but are unsure of how to contribute, please open a
 
 ---
 
-## Data Service Limitations
+## Key Points
+
+- The XML-RPC API provided a robust Data Service endpoint that allowed for fetching data from various tables with flexible querying capabilities.
+- The following features were part of the Data Service that was widely used and are currently not implemented in REST v2 for any endpoint:
+  - Counting records based on a filter
+  - Filtering with SQL-like syntax (e.g., `%name%`)
+  - Pagination with limits and offsets vs token-based pagination to allow for asynchronous fetching
+  - Filtering/limiting by an array of identifiers
+  - Specifying which columns to return to reduce payload size
+
+---
+
+## XML-RPC Examples Missing from REST v2
+Below is a list of specific features from various applications that relied on the various XML-RPC services that are not yet implemented,
+under-implemented, or have significant limitations in REST v2.
 
 ### 1. Contact Count (`count()`)
 **XML-RPC Capability:**
@@ -122,9 +136,10 @@ If you've identified an issue but are unsure of how to contribute, please open a
 
 ## REST v1 Endpoints Missing from REST v2
 
-**Note:** These features are available in REST v1 but missing in REST v2. **Lower priority** since v1 is not being sunset at this time.
+**Note:** These features are available in REST v1 but missing in REST v2. The focus is on prioritizing features/methods/calls that are disappearing with XML-RPC deprecation.
+These are all **lower priority** since v1 is not being sunset at this time, but should be considered for future parity.
 
-### 8. Custom Field Creation
+### 1. Custom Field Creation
 **REST v1 Capability:**
 - `POST /rest/v1/contacts/model/customFields` - Create custom fields programmatically
 
@@ -133,7 +148,7 @@ If you've identified an issue but are unsure of how to contribute, please open a
 
 ---
 
-### 9. Resthook Management (Webhooks)
+### 2. Resthook Management (Webhooks)
 **REST v1 Capability:**
 - `GET /rest/v1/hooks` - List all webhooks
 - `POST /rest/v1/hooks` - Create webhook
@@ -147,7 +162,7 @@ If you've identified an issue but are unsure of how to contribute, please open a
 
 ---
 
-### 10. Bulk Tag Operations for Single Contact
+### 3. Bulk Tag Operations for Single Contact
 **REST v1 Capability:**
 - `POST /rest/v1/contacts/{id}/tags` - Apply multiple tags to one contact in single call
 - `DELETE /rest/v1/contacts/{id}/tags` - Remove multiple tags from one contact in single call
