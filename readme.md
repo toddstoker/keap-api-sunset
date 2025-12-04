@@ -54,6 +54,9 @@ Document missing, incomplete, or inefficiently implemented features between XML-
 ### `DataService.getAppSetting`
 - Module `ContactAction` & setting `optionstype` to get all Note Types
   - [Get Application Configuration](https://developer.infusionsoft.com/docs/restv2/#tag/Settings/operation/getApplicationConfigurationsUsingGET) exists, but maybe `ContactAction` module is now split into `appointments`, `tasks`, and `notes` modules?
+ 
+### `CreditCardSubmissionService.requestSubmissionToken`
+- **Does not exist**
 
 ## DataService tables without REST v2 endpoints (or lacking functionality):
 
