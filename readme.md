@@ -5,129 +5,131 @@ This document outlines functionality available in XML-RPC/REST v1 that is **miss
 ## Purpose
 Document missing, incomplete, or inefficiently implemented features between XML-RPC/v1 and REST v2 to communicate requirements to the Keap API team to ensure feature parity exists prior to sunsetting older APIs.
 
-## Contributing
-We need your help! If you identify additional missing features or limitations in REST v2, please contribute by submitting a pull request to this repository with the details.
+> [!IMPORTANT]
+> ## Contributing
+> We need your help! If you identify additional missing features or limitations in REST v2, please contribute by submitting a pull request to this repository with the details.
+>
+> If you've identified an issue but are unsure of how to contribute, please open an issue so we can discuss and document it.
 
-If you've identified an issue but are unsure of how to contribute, please open an issue so we can discuss and document it.
-
-## Key Points
+## Summary
 
 - The XML-RPC API provided a robust Data Service endpoint that allowed for fetching data from various tables with flexible querying capabilities.
 - The following features were part of the Data Service that was widely used and are currently not implemented in REST v2 for any endpoint:
-  - Counting records based on a filter
-  - Filtering with SQL-like syntax (e.g., `%name%`)
-  - Pagination with limits and offsets vs token-based pagination to allow for asynchronous fetching
-  - Filtering/limiting by an array of identifiers
-  - Specifying which columns to return to reduce payload size
+    - Counting records based on a filter
+    - Filtering with SQL-like syntax (e.g., `%name%`)
+    - Pagination with limits and offsets vs token-based pagination to allow for asynchronous fetching
+    - Filtering/limiting by an array of identifiers
+    - Filtering using "NOT EQUALS" (`~<>~`)
+    - Specifying which columns to return to reduce payload size
+- There are a handful of specific endpoints that are currently in use that are intentionally not being ported but the reasoning/migration path forward is unclear
+- Some new REST v2 endpoints are not efficient requiring multiple API calls (sometimes up to 1000 api calls) to achieve what was possible in a single XML-RPC call
 
 ---
 
-## XML-RPC Examples Missing from REST v2
-Below is a list of specific features from various applications that relied on the various XML-RPC services that are not yet implemented,
-under-implemented, or have significant limitations in REST v2.
+## Specific XML-RPC endpoints not available (or lacking some functionality) in REST v2:
 
-### 1. Contact Count (`DataService.count` - Any Table)
-**XML-RPC Capability:**
-- `data()->count('Contact', ['Id' => '%'])` - Returns total contact count in a single call
+### `FunnelService.achieveGoal`
+- **Does not exist**
+- In [GapAnalysisJustifcations.xlsx](https://thryv.sharepoint.com/:x:/t/KeapGryffindor/EUYJ7---f_JEvRt4YKzyQwcBa3x_vpivPai1GEw2HOC3EA?e=9EHDtO): 
+  - "Achieve a goal" is listed under "Campaign sequence". Maybe not the same?
+  - Reason: "Was not a part of V1, out dated and bug inducing"
+  - This still exists in-app, so how will goals be triggered going forward?
 
-**Current REST v2 Solution:**
-- ❌ No endpoint to retrieve total contact count without pagination
+### `ContactService.addWithDupCheck`
+- Can be completed with 2 calls (search + create if not found)
 
-**Workaround:** Paginate through all contacts to count them
+### `ContactService.runActionSequence`
+- Maybe "[Add Contact to an automation sequence](https://developer.infusionsoft.com/docs/restv2/#tag/Automation/operation/addContactsToAutomationSequenceUsingPOST)"? 
+    - Requires `automation_id` & `sequence_id` instead of *only* `actionSetId`
+- In [GapAnalysisJustifcations.xlsx](https://thryv.sharepoint.com/:x:/t/KeapGryffindor/EUYJ7---f_JEvRt4YKzyQwcBa3x_vpivPai1GEw2HOC3EA?e=9EHDtO):
+  - "Run Action" is listed under "Campaign sequence". Maybe not the same?
+  - Reason: "Was not a part of V1, out dated and bug inducing"
+      
+### `SearchService.getSavedSearchResultsAllFields`
+- [Looks like it might exist, but docs indicate it is deprecated](https://developer.infusionsoft.com/docs/restv2/#tag/Reporting/operation/runReportUsingPOST)
+- From developer forum post:
+  - [Deprecated reporting endpoints: These provide legacy Saved Search reports in REST format, rather than a full new reporting solution. We won’t extend them beyond v2, but we’ll make sure a new reporting solution is in place before retiring them.](https://integration.keap.com/t/rest-v2-improvements-request/93810/2)
+  - So is the advice to migrate from XML-RPC to REST v2 Reporting right now, or wait until new reporting endpoints are released?
+  
+### `DataService.getAppSetting`
+- Module `ContactAction` & setting `optionstype` to get all Note Types
+  - [Get Application Configuration](https://developer.infusionsoft.com/docs/restv2/#tag/Settings/operation/getApplicationConfigurationsUsingGET) exists, but maybe `ContactAction` module is now split into `appointments`, `tasks`, and `notes` modules?
 
-**Impact:** Performance degradation, unnecessary API calls
+## DataService tables without REST v2 endpoints (or lacking functionality):
 
----
+### `Contact`
+- Get multiple specific contacts by IDs
+  - Contacts endpoint exists, but cannot filter by multiple IDs
+- Count total/filtered contacts
+  - Contacts endpoint exists, but no way to get total count without pagination and loading every contact
 
-### 2. Tag Application Dates (`DataService.query` - ContactGroupAssign Table)
-**XML-RPC Capability:**
-- `data()->query('ContactGroupAssign', ...)` with `['Contact.Id' => $contactId]`
-- Returns `DateCreated` for all tags applied to a single contact in **one call**
+### `ContactGroup`
+- Tag Search with LIKE (`%search%`)
+    - Contact Groups endpoint exists, but only supports exact name matches when filtering
+- Fetch specific tags by IDs
+    - Contact Groups endpoint exists, but cannot filter by multiple IDs
 
-**Current REST v2 Solution:**
-- ❌ No endpoint to retrieve tag application dates directly
-  - **Workaround:** Must make 1 call to get contact tags, then 1 call per each of contact's tags to "List Tagged Contacts" endpoint for each tag. **N+1 Problem**
-- Additional problem: ❌ Cannot filter "List Tagged Contacts" by contact ID
+### `ContactGroupAssign`
+- Get DateCreated for a contact & tag
+    - Tags endpoint exists, but cannot filter by a contact id, only email
+- Get count of contacts for a tag
+    - Tags endpoint exists, but must iterate through all contacts to count them
+- Get specific tags by IDs
+    - Tags endpoint exists, but cannot filter by multiple IDs
 
-**Impact:** Severe performance degradation (1 call → N+1 calls where N = number of tags)
+### `CreditCard`
+- Creating a new entry
+  - Payment Methods endpoints exist, but creation endpoint does not
+  - In [GapAnalysisJustifcations.xlsx](https://thryv.sharepoint.com/:x:/t/KeapGryffindor/EUYJ7---f_JEvRt4YKzyQwcBa3x_vpivPai1GEw2HOC3EA?e=9EHDtO):
+    - Reason: "CreditCard deprecated and phasing out in V2, so no longer supported."
+    - What is the alternative for storing payment methods going forward?
 
----
+### `DataFormField`
+- Get Custom Fields for Companies (FormId = -6)
+  - **Does not exist**
+- Get Custom Fields for Opportunities (FormId = -4)
+  - **Does not exist**
 
-### 3. Bulk Email Engagement Data (`DataService.query` - EmailAddStatus Table)
-**XML-RPC Capability:**
-- `data()->query('EmailAddStatus', ...)` - Returns bulk engagement data including:
-  - Opt status (`Type`)
-  - Last email sent date (`LastSentDate`)
-  - Last open date (`LastOpenDate`)
-  - Last click date (`LastClickDate`)
-  - Date created (`DateCreated`)
+### `DataFormGroup`
+- Get Custom Field group `Name`
+  - Can get group ids by retrieving contact model, but group names are not included
+  - Use case: Organize custom fields in UI for grouped display
+- Filter based on DataFormTab IDs
+  - **Does not exist**
 
-**Current REST v2 Solution:**
-- ⚠️ "Retrieve an Email Address Status" endpoint only returns opt status for **single contact lookups**
-- ❌ Missing fields: `LastClickDate`, `LastOpenDate`, `LastSentDate`, `DateCreated`
+### `DataFormTab`
+- Get Custom Field tabs
+  - **Does not exist**
+  - Use case: Organize custom fields in UI for grouped display
+- Filter Tabs based on type: Contact vs Company vs Opportunity
+  - **Does not exist**
 
-**Workaround:** ❌ None
+### `EmailAddStatus`
+- Retrieving `LastClickDate`, `LastOpenDate`, `LastSentDate` (no filtering)
+  - Endpoint exists to get opt status only
+- Retrieve multiple records (1,000 per call) at once
+  - Endpoint only supports single contact lookups
 
-**Impact:** (*Assuming endpoint can be modified to return needed data*) Severe performance degradation (1 call per contact, instead of 1 call per 1,000 contacts)
+### `Job`
+- Query by `JobTitle`
+  - Orders endpoint exists, but cannot query by title
 
----
+### `Lead`
+- Find by contact ID
+  - Opportunities endpoint exists, but cannot filter by contact ID
+- Filter based on title
+  - Opportunities endpoint exists, but cannot filter by opportunity title
+- Exclude based on User ID
+  - No endpoints exist that allow filtering using `~<>~` operators
 
-### 4. Custom Field Group Names (`DataService.query` - DataFormGroup Table)
-**XML-RPC Capability:**
-- `data()->query('DataFormGroup', ...)` - Returns custom field group metadata:
-  - `Id`
-  - `TabId`
-  - `Name` (group name)
+### `Referral`
+- Query by single or multiple ContactIds
+  - **Does not exist**
 
-**Current REST v2 Solution:**
-- Contact model endpoint returns custom fields data with `group_id`
-- ❌ No way to retrieve the **name** of the custom field group
-- Can only see numeric group ID
-
-**Workaround:** ❌ None
-
-**Impact:** Cannot display human-readable group names in UI
-
----
-
-### 5. Tag Search with LIKE (`DataService.query` - ContactGroup Table)
-**XML-RPC Capability:**
-- `data()->query('ContactGroup', ...)` with `['GroupName' => '%search%']`
-- LIKE searching to find tags containing a word or phrase
-
-- Retrieving tags endpoint only supports exact name matches when filtering
-
-**Workaround:** Must paginate through all tags and manually filter client-side
-
-**Impact:** Reduced search functionality for tag discovery
-
----
-
-### 6. Fetch Specific Tags by IDs (`DataService.query` - ContactGroup Table - IN Query)
-**XML-RPC Capability:**
-- `data()->query('ContactGroup', ...)` with `['Id' => [1, 5, 10, 25]]`
-- IN searching to fetch only specific tags by ID array
-
-**Current REST v2 Solution:**
-- Retrieving tags endpoint only supports limited fields to filter by
-
-**Workaround:** Must paginate through all tags and manually filter client-side
-
-**Impact:** Inefficient data retrieval when only specific tags are needed
-
----
-
-### 7. Tag Contact Count (`DataService.count` - ContactGroupAssign Table)
-**XML-RPC Capability:**
-- `data()->count('ContactGroupAssign', ['GroupId' => $tagId])`
-- Returns count of contacts with a specific tag in one call
-
-**Current REST v2 Solution:**
-- ❌ No endpoint to count contacts for a tag
-
-**Workaround:** Must paginate through all contacts for a specific tag and count them
-
-**Impact:** Performance degradation for tag analytics
+### `SavedFilter`
+- List all saved searches
+  - Might exist, but docs indicate it is deprecated
+  - See [SearchService.getSavedSearchResultsAllFields](#searchservicegetsavedsearchresultsallfields) above
 
 ---
 
@@ -171,4 +173,3 @@ These are all **lower priority** since v1 is not being sunset at this time, but 
 - Inverse operation not available
 
 ---
-
