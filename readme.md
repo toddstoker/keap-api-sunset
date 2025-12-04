@@ -65,6 +65,11 @@ Document missing, incomplete, or inefficiently implemented features between XML-
   - Contacts endpoint exists, but cannot filter by multiple IDs
 - Count total/filtered contacts
   - Contacts endpoint exists, but no way to get total count without pagination and loading every contact
+- Filter contacts by custom field value
+  - Not possible in V2
+  - From developer forum post: 
+    - [This won’t be supported in v2 due to performance reasons, but it’s still something we may revisit in future versions.](https://integration.keap.com/t/rest-v2-improvements-request/93810/3)
+    - Consider: It is much less performant and more taxing to make several dozen API calls fetching ALL contacts with Custom Field data, and filter client-side.
 
 ### `ContactGroup`
 - Tag Search with LIKE (`%search%`)
