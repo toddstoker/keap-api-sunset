@@ -132,6 +132,12 @@ Document missing, incomplete, or inefficiently implemented features between XML-
   - Opportunities endpoint exists, but cannot filter by opportunity title
 - Exclude based on User ID
   - No endpoints exist that allow filtering using `~<>~` operators
+ 
+### `PayPlan`
+- List, Find by ID
+
+### `PayPlanItem`
+- List, Find by ID
 
 ### `Referral`
 - Query by single or multiple ContactIds
