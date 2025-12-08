@@ -192,3 +192,13 @@ These are all **lower priority** since v1 is not being sunset at this time, but 
 - Inverse operation not available
 
 ---
+
+### 4. Contact Add or Update Endpoint
+**REST v1 Capability:**
+- `PUT /rest/v1/contacts` - Create or Update a Contact
+
+**Current REST v2 Solution:**
+- ❌ v2 only creating contacts with `POST` or updating contacts with `PATCH`
+- A "Create or Update" solution requires executing 2 API calls: List/Search Contacts, then either Create Contact or Update Contact depending on the result of the Search.
+
+---
