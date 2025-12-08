@@ -72,7 +72,9 @@ Document missing, incomplete, or inefficiently implemented features between XML-
     - [This won’t be supported in v2 due to performance reasons, but it’s still something we may revisit in future versions.](https://integration.keap.com/t/rest-v2-improvements-request/93810/3)
     - Consider: It is much less performant and more taxing to make several dozen API calls fetching ALL contacts with Custom Field data, and filter client-side.
 - Filter contacts by standard field values: phone, address, etc
-  - Can filter by email, name, company_id     
+  - Can filter by email, name, company_id
+- Update a Contact's `Password`
+  - Not documented under V2 in either Update Contact or Update User 
 
 ### `ContactGroup`
 - Tag Search with LIKE (`%search%`)
