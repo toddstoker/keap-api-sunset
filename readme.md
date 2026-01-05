@@ -74,7 +74,13 @@ Document missing, incomplete, or inefficiently implemented features between XML-
 - Filter contacts by standard field values: phone, address, etc
   - Can filter by email, name, company_id
 - Update a Contact's `Password`
-  - Not documented under V2 in either Update Contact or Update User 
+  - Not documented under V2 in either Update Contact or Update User
+ 
+### `ContactAction`
+- Searching for specific notes using ID
+    - Can retrieve contacts with notes, but no way to filter by specific note id
+- Searching for specific notes by date, creator, etc
+    - No endpoints just for contact notes 
 
 ### `ContactGroup`
 - Tag Search with LIKE (`%search%`)
